@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { getSession } from 'next-auth/client';
 import Header from './Header';
 import Footer from './Footer';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../utils/apiEndpoints';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers, fetchBlogPosts, fetchShopItems, fetchEvents } from '../redux/actions';
+import { debounce } from 'lodash';
 
 const AdminDashboard = () => {
   const [session, setSession] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [blogPosts, setBlogPosts] = useState([]);
-  const [shopItems, setShopItems] = useState([]);
-  const [events, setEvents] = useState([]);
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.users);
+  const blogPosts = useSelector((state) => state.blogPosts);
+  const shopItems = useSelector((state) => state.shopItems);
+  const events = useSelector((state) => state.events);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -18,43 +22,36 @@ const AdminDashboard = () => {
       setSession(session);
     };
 
-    const fetchData = async () => {
-      const usersResponse = await axios.get(API_ENDPOINTS.USERS);
-      setUsers(usersResponse.data);
-
-      const blogPostsResponse = await axios.get(API_ENDPOINTS.BLOG);
-      setBlogPosts(blogPostsResponse.data);
-
-      const shopItemsResponse = await axios.get(API_ENDPOINTS.SHOP);
-      setShopItems(shopItemsResponse.data);
-
-      const eventsResponse = await axios.get(API_ENDPOINTS.COMMUNITY);
-      setEvents(eventsResponse.data);
-    };
-
     fetchSession();
-    fetchData();
-  }, []);
+    dispatch(fetchUsers());
+    dispatch(fetchBlogPosts());
+    dispatch(fetchShopItems());
+    dispatch(fetchEvents());
+  }, [dispatch]);
 
-  const handleDeleteUser = async (userId) => {
+  const handleDeleteUser = useCallback(async (userId) => {
     await axios.delete(`${API_ENDPOINTS.USERS}/${userId}`);
-    setUsers(users.filter((user) => user._id !== userId));
-  };
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
-  const handleDeleteBlogPost = async (postId) => {
+  const handleDeleteBlogPost = useCallback(async (postId) => {
     await axios.delete(`${API_ENDPOINTS.BLOG}/${postId}`);
-    setBlogPosts(blogPosts.filter((post) => post._id !== postId));
-  };
+    dispatch(fetchBlogPosts());
+  }, [dispatch]);
 
-  const handleDeleteShopItem = async (itemId) => {
+  const handleDeleteShopItem = useCallback(async (itemId) => {
     await axios.delete(`${API_ENDPOINTS.SHOP}/${itemId}`);
-    setShopItems(shopItems.filter((item) => item._id !== itemId));
-  };
+    dispatch(fetchShopItems());
+  }, [dispatch]);
 
-  const handleDeleteEvent = async (eventId) => {
+  const handleDeleteEvent = useCallback(async (eventId) => {
     await axios.delete(`${API_ENDPOINTS.COMMUNITY}/${eventId}`);
-    setEvents(events.filter((event) => event._id !== eventId));
-  };
+    dispatch(fetchEvents());
+  }, [dispatch]);
+
+  const debouncedSearch = useMemo(() => debounce((query) => {
+    // Implement search functionality here
+  }, 300), []);
 
   return (
     <div>

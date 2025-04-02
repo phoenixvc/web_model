@@ -6,6 +6,15 @@ import { useSession } from 'next-auth/client';
 const BlogPostDetail = ({ post, onEdit, onDelete }) => {
   const [session] = useSession();
 
+  const handleDelete = async () => {
+    try {
+      await onDelete();
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+      alert('Failed to delete post. Please try again later.');
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -16,7 +25,7 @@ const BlogPostDetail = ({ post, onEdit, onDelete }) => {
           {session && session.user.email === post.author && (
             <div className="blog-post-actions">
               <button onClick={onEdit}>Edit</button>
-              <button onClick={onDelete}>Delete</button>
+              <button onClick={handleDelete}>Delete</button>
             </div>
           )}
         </article>

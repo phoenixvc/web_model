@@ -8,6 +8,7 @@ const UserDashboard = () => {
   const [user, setUser] = useState(null);
   const [activities, setActivities] = useState([]);
   const [analytics, setAnalytics] = useState({});
+  const [achievements, setAchievements] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +34,13 @@ const UserDashboard = () => {
           }
         });
         setAnalytics(userAnalytics.data);
+
+        const userAchievements = await axios.get('/api/achievements', {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`
+          }
+        });
+        setAchievements(userAchievements.data);
       }
     };
 
@@ -67,6 +75,14 @@ const UserDashboard = () => {
             <p>Engagement: {analytics.engagement}</p>
             <p>Activity: {analytics.activity}</p>
           </div>
+        </section>
+        <section>
+          <h2>Achievements</h2>
+          <ul>
+            {achievements.map((achievement) => (
+              <li key={achievement.id}>{achievement.description}</li>
+            ))}
+          </ul>
         </section>
       </main>
       <Footer />

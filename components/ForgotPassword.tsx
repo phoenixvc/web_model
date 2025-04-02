@@ -33,7 +33,11 @@ const ForgotPassword = () => {
         await axios.post('/api/auth/forgot-password', formData);
         setSuccess(true);
       } catch (error) {
-        setErrors({ submit: 'Password reset request failed. Please try again.' });
+        if (error.response && error.response.data && error.response.data.message) {
+          setErrors({ submit: error.response.data.message });
+        } else {
+          setErrors({ submit: 'Password reset request failed. Please try again.' });
+        }
       }
     }
   };

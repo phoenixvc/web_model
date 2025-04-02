@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { getSession } from 'next-auth/client';
 import io from 'socket.io-client';
 import Header from './Header';
+import { debounce } from 'lodash';
 
 const Chat = () => {
   const [session, setSession] = useState(null);
@@ -33,12 +34,14 @@ const Chat = () => {
     }
   }, [session]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = useCallback(() => {
     if (newMessage.trim() !== '') {
       socket.emit('message', { user: session.user.email, text: newMessage });
       setNewMessage('');
     }
-  };
+  }, [newMessage, session, socket]);
+
+  const debouncedSendMessage = useMemo(() => debounce(handleSendMessage, 300), [handleSendMessage]);
 
   return (
     <div>
@@ -60,7 +63,7 @@ const Chat = () => {
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type a message..."
             />
-            <button onClick={handleSendMessage}>Send</button>
+            <button onClick={debouncedSendMessage}>Send</button>
           </div>
         ) : (
           <p>Please log in to participate in the chat.</p>
@@ -70,4 +73,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default React.memo(Chat);

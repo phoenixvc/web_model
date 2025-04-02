@@ -15,7 +15,8 @@ const UserSettings = () => {
     notifications: {
       email: false,
       inApp: false
-    }
+    },
+    privacySettings: 'public'
   });
 
   useEffect(() => {
@@ -32,7 +33,8 @@ const UserSettings = () => {
           username: userProfile.data.username,
           email: userProfile.data.email,
           profilePicture: userProfile.data.profilePicture,
-          notifications: userProfile.data.notifications
+          notifications: userProfile.data.notifications,
+          privacySettings: userProfile.data.privacySettings
         });
       }
     };
@@ -119,6 +121,19 @@ const UserSettings = () => {
                         onChange={handleChange}
                       />
                       In-App Notifications
+                    </label>
+                  </div>
+                  <div>
+                    <label>
+                      Privacy Settings:
+                      <select
+                        name="privacySettings"
+                        value={settingsData.privacySettings}
+                        onChange={handleChange}
+                      >
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                      </select>
                     </label>
                   </div>
                   <button onClick={handleSave}>Save</button>
