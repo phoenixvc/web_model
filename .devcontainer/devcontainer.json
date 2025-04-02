@@ -1,1 +1,17 @@
-{}
+{
+  "name": "Web Model Dev Container",
+  "dockerFile": "../Dockerfile",
+  "context": "..",
+  "runArgs": ["--env-file", "../.env"],
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash",
+    "editor.formatOnSave": true
+  },
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-dotnettools.csharp"
+  ],
+  "postCreateCommand": "npm install",
+  "remoteUser": "node"
+}

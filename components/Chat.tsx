@@ -20,7 +20,7 @@ const Chat = () => {
 
   useEffect(() => {
     if (session) {
-      const socket = io();
+      const socket = io('http://socket:3001');
       setSocket(socket);
 
       socket.on('message', (message) => {

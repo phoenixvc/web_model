@@ -3,6 +3,7 @@ import { getSession } from 'next-auth/client';
 import Header from './Header';
 import Footer from './Footer';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../utils/apiEndpoints';
 
 const AdminDashboard = () => {
   const [session, setSession] = useState(null);
@@ -18,16 +19,16 @@ const AdminDashboard = () => {
     };
 
     const fetchData = async () => {
-      const usersResponse = await axios.get('/api/users');
+      const usersResponse = await axios.get(API_ENDPOINTS.USERS);
       setUsers(usersResponse.data);
 
-      const blogPostsResponse = await axios.get('/api/blog');
+      const blogPostsResponse = await axios.get(API_ENDPOINTS.BLOG);
       setBlogPosts(blogPostsResponse.data);
 
-      const shopItemsResponse = await axios.get('/api/shop');
+      const shopItemsResponse = await axios.get(API_ENDPOINTS.SHOP);
       setShopItems(shopItemsResponse.data);
 
-      const eventsResponse = await axios.get('/api/community');
+      const eventsResponse = await axios.get(API_ENDPOINTS.COMMUNITY);
       setEvents(eventsResponse.data);
     };
 
@@ -36,22 +37,22 @@ const AdminDashboard = () => {
   }, []);
 
   const handleDeleteUser = async (userId) => {
-    await axios.delete(`/api/users/${userId}`);
+    await axios.delete(`${API_ENDPOINTS.USERS}/${userId}`);
     setUsers(users.filter((user) => user._id !== userId));
   };
 
   const handleDeleteBlogPost = async (postId) => {
-    await axios.delete(`/api/blog/${postId}`);
+    await axios.delete(`${API_ENDPOINTS.BLOG}/${postId}`);
     setBlogPosts(blogPosts.filter((post) => post._id !== postId));
   };
 
   const handleDeleteShopItem = async (itemId) => {
-    await axios.delete(`/api/shop/${itemId}`);
+    await axios.delete(`${API_ENDPOINTS.SHOP}/${itemId}`);
     setShopItems(shopItems.filter((item) => item._id !== itemId));
   };
 
   const handleDeleteEvent = async (eventId) => {
-    await axios.delete(`/api/community/${eventId}`);
+    await axios.delete(`${API_ENDPOINTS.COMMUNITY}/${eventId}`);
     setEvents(events.filter((event) => event._id !== eventId));
   };
 
