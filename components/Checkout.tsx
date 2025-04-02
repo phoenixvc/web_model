@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import { getSession } from 'next-auth/client';
+import axios from 'axios';
+import { API_ENDPOINTS } from '../utils/apiEndpoints';
 
 const Checkout = () => {
   const [session, setSession] = useState(null);
@@ -69,15 +71,13 @@ const Checkout = () => {
     };
 
     try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
+      const response = await axios.post(`${API_ENDPOINTS.ASPIRE}/checkout`, orderData, {
         headers: {
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderData)
+        }
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         // Handle successful checkout
       } else {
         throw new Error('Checkout failed');

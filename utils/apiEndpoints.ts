@@ -3,4 +3,5 @@ export const API_ENDPOINTS = {
   BLOG: 'http://web:3000/api/blog',
   SHOP: 'http://web:3000/api/shop',
   COMMUNITY: 'http://web:3000/api/community',
+  ASPIRE: 'http://dotnet-aspire:5000/api/aspire',
 };

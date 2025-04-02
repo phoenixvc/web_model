@@ -3,6 +3,7 @@ import Header from './Header';
 import Footer from './Footer';
 import { getSession } from 'next-auth/client';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../utils/apiEndpoints';
 
 const UserSettings = () => {
   const [user, setUser] = useState(null);
@@ -36,6 +37,16 @@ const UserSettings = () => {
           notifications: userProfile.data.notifications,
           privacySettings: userProfile.data.privacySettings
         });
+
+        const notificationPreferences = await axios.get(`${API_ENDPOINTS.ASPIRE}/notification-preferences`, {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`
+          }
+        });
+        setSettingsData((prevData) => ({
+          ...prevData,
+          notifications: notificationPreferences.data
+        }));
       }
     };
 
@@ -53,6 +64,13 @@ const UserSettings = () => {
         Authorization: `Bearer ${session.accessToken}`
       }
     });
+
+    await axios.put(`${API_ENDPOINTS.ASPIRE}/notification-preferences`, settingsData.notifications, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`
+      }
+    });
+
     setEditing(false);
   };
 
