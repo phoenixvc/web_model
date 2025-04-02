@@ -17,17 +17,28 @@ const Checkout = () => {
     state: '',
     zip: ''
   });
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchSession = async () => {
-      const session = await getSession();
-      setSession(session);
+      try {
+        const session = await getSession();
+        setSession(session);
+      } catch (error) {
+        console.error('Failed to fetch session:', error);
+        setError('Failed to fetch session. Please try again later.');
+      }
     };
 
     const fetchCartItems = async () => {
-      const response = await fetch('/api/cart');
-      const data = await response.json();
-      setCartItems(data);
+      try {
+        const response = await fetch('/api/cart');
+        const data = await response.json();
+        setCartItems(data);
+      } catch (error) {
+        console.error('Failed to fetch cart items:', error);
+        setError('Failed to fetch cart items. Please try again later.');
+      }
     };
 
     fetchSession();
@@ -57,18 +68,23 @@ const Checkout = () => {
       shippingInfo
     };
 
-    const response = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(orderData)
-    });
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+      });
 
-    if (response.ok) {
-      // Handle successful checkout
-    } else {
-      // Handle checkout error
+      if (response.ok) {
+        // Handle successful checkout
+      } else {
+        throw new Error('Checkout failed');
+      }
+    } catch (error) {
+      console.error('Failed to complete checkout:', error);
+      setError('Failed to complete checkout. Please try again later.');
     }
   };
 
@@ -77,6 +93,7 @@ const Checkout = () => {
       <Header />
       <main>
         <h1>Checkout</h1>
+        {error && <p className="error-message">{error}</p>}
         <section>
           <h2>Shopping Cart Summary</h2>
           <ul>

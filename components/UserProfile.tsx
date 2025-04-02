@@ -11,8 +11,12 @@ const UserProfile = () => {
   const [profileData, setProfileData] = useState({
     username: '',
     bio: '',
-    profilePicture: ''
+    profilePicture: '',
+    socialMediaLinks: [],
+    privacySettings: 'public',
+    achievements: []
   });
+  const [activityFilter, setActivityFilter] = useState('all');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +31,10 @@ const UserProfile = () => {
         setProfileData({
           username: userProfile.data.username,
           bio: userProfile.data.bio,
-          profilePicture: userProfile.data.profilePicture
+          profilePicture: userProfile.data.profilePicture,
+          socialMediaLinks: userProfile.data.socialMediaLinks,
+          privacySettings: userProfile.data.privacySettings,
+          achievements: userProfile.data.achievements
         });
 
         const userActivities = await axios.get('/api/activities', {
@@ -64,6 +71,15 @@ const UserProfile = () => {
     }));
   };
 
+  const handleActivityFilterChange = (e) => {
+    setActivityFilter(e.target.value);
+  };
+
+  const filteredActivities = activities.filter((activity) => {
+    if (activityFilter === 'all') return true;
+    return activity.type === activityFilter;
+  });
+
   return (
     <div>
       <Header />
@@ -86,12 +102,33 @@ const UserProfile = () => {
                     value={profileData.bio}
                     onChange={handleChange}
                   />
+                  <input
+                    type="text"
+                    name="socialMediaLinks"
+                    value={profileData.socialMediaLinks.join(', ')}
+                    onChange={(e) =>
+                      setProfileData((prevData) => ({
+                        ...prevData,
+                        socialMediaLinks: e.target.value.split(', ')
+                      }))
+                    }
+                  />
+                  <select
+                    name="privacySettings"
+                    value={profileData.privacySettings}
+                    onChange={handleChange}
+                  >
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
+                  </select>
                   <button onClick={handleSave}>Save</button>
                 </div>
               ) : (
                 <div>
                   <h3>{user.username}</h3>
                   <p>{user.bio}</p>
+                  <p>Social Media Links: {user.socialMediaLinks.join(', ')}</p>
+                  <p>Privacy Settings: {user.privacySettings}</p>
                   <button onClick={handleEdit}>Edit Profile</button>
                 </div>
               )}
@@ -100,9 +137,23 @@ const UserProfile = () => {
         </section>
         <section>
           <h2>Recent Activities</h2>
+          <select value={activityFilter} onChange={handleActivityFilterChange}>
+            <option value="all">All</option>
+            <option value="posts">Posts</option>
+            <option value="comments">Comments</option>
+            <option value="likes">Likes</option>
+          </select>
           <ul>
-            {activities.map((activity) => (
+            {filteredActivities.map((activity) => (
               <li key={activity.id}>{activity.description}</li>
+            ))}
+          </ul>
+        </section>
+        <section>
+          <h2>Achievements</h2>
+          <ul>
+            {profileData.achievements.map((achievement, index) => (
+              <li key={index}>{achievement}</li>
             ))}
           </ul>
         </section>

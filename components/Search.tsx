@@ -4,13 +4,19 @@ import Header from './Header';
 const Search = ({ data }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [error, setError] = useState(null);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
-    const results = data.filter((item) =>
-      item.title.toLowerCase().includes(e.target.value.toLowerCase())
-    );
-    setSearchResults(results);
+    try {
+      const results = data.filter((item) =>
+        item.title.toLowerCase().includes(e.target.value.toLowerCase())
+      );
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Failed to search:', error);
+      setError('Failed to search. Please try again later.');
+    }
   };
 
   return (
@@ -25,6 +31,7 @@ const Search = ({ data }) => {
             onChange={handleSearch}
           />
         </div>
+        {error && <p className="error-message">{error}</p>}
         <div className="search-results">
           {searchResults.map((result) => (
             <div key={result._id} className="search-result-item">

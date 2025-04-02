@@ -6,6 +6,10 @@ import Header from './Header';
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [session, setSession] = useState(null);
+  const [notificationPreferences, setNotificationPreferences] = useState({
+    email: false,
+    inApp: false
+  });
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -18,6 +22,13 @@ const Notifications = () => {
           }
         });
         setNotifications(response.data);
+
+        const preferencesResponse = await axios.get('/api/notification-preferences', {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`
+          }
+        });
+        setNotificationPreferences(preferencesResponse.data);
       }
     };
 
@@ -49,6 +60,22 @@ const Notifications = () => {
     }
   };
 
+  const handlePreferenceChange = async (e) => {
+    const { name, checked } = e.target;
+    const updatedPreferences = { ...notificationPreferences, [name]: checked };
+    setNotificationPreferences(updatedPreferences);
+
+    const response = await axios.put('/api/notification-preferences', updatedPreferences, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`
+      }
+    });
+
+    if (response.status !== 200) {
+      // Handle error
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -64,6 +91,27 @@ const Notifications = () => {
             </li>
           ))}
         </ul>
+        <section>
+          <h2>Notification Preferences</h2>
+          <label>
+            <input
+              type="checkbox"
+              name="email"
+              checked={notificationPreferences.email}
+              onChange={handlePreferenceChange}
+            />
+            Email Notifications
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              name="inApp"
+              checked={notificationPreferences.inApp}
+              onChange={handlePreferenceChange}
+            />
+            In-App Notifications
+          </label>
+        </section>
       </main>
     </div>
   );

@@ -8,13 +8,21 @@ const ProductListing = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [session, loading] = useSession();
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await fetch('/api/shop');
-      const data = await response.json();
-      setProducts(data);
-      setFilteredProducts(data);
+      try {
+        const response = await fetch('/api/shop');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+        setProducts(data);
+        setFilteredProducts(data);
+      } catch (error) {
+        setError('Failed to fetch products. Please try again later.');
+      }
     };
 
     fetchProducts();
@@ -37,6 +45,7 @@ const ProductListing = () => {
       <Header />
       <main>
         <h1>Product Listing</h1>
+        {error && <p>{error}</p>}
         <div className="search-bar">
           <input
             type="text"

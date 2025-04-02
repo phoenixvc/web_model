@@ -15,6 +15,8 @@ const Contact = () => {
     message: ''
   });
 
+  const [submitError, setSubmitError] = useState('');
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -49,11 +51,27 @@ const Contact = () => {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // Send form data to the server
-      console.log('Form submitted:', formData);
+      try {
+        // Send form data to the server
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit form');
+        }
+
+        console.log('Form submitted:', formData);
+      } catch (error) {
+        setSubmitError('Failed to submit form. Please try again.');
+      }
     }
   };
 
@@ -95,6 +113,7 @@ const Contact = () => {
             />
             {formErrors.message && <span>{formErrors.message}</span>}
           </div>
+          {submitError && <p>{submitError}</p>}
           <button type="submit">Submit</button>
         </form>
       </main>

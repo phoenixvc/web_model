@@ -16,9 +16,14 @@ const Events = () => {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const response = await fetch('/api/community');
-      const data = await response.json();
-      setEvents(data);
+      try {
+        const response = await fetch('/api/community');
+        const data = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error('Failed to fetch events:', error);
+        alert('Failed to fetch events. Please try again later.');
+      }
     };
 
     fetchEvents();
@@ -31,26 +36,31 @@ const Events = () => {
       return;
     }
 
-    const response = await fetch('/api/community', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...newEvent, author: session.user.email }),
-    });
-
-    if (response.ok) {
-      const newEventData = await response.json();
-      setEvents([...events, newEventData]);
-      setNewEvent({
-        title: '',
-        date: '',
-        time: '',
-        location: '',
-        description: ''
+    try {
+      const response = await fetch('/api/community', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...newEvent, author: session.user.email }),
       });
-    } else {
-      alert('Failed to create event.');
+
+      if (response.ok) {
+        const newEventData = await response.json();
+        setEvents([...events, newEventData]);
+        setNewEvent({
+          title: '',
+          date: '',
+          time: '',
+          location: '',
+          description: ''
+        });
+      } else {
+        alert('Failed to create event.');
+      }
+    } catch (error) {
+      console.error('Failed to create event:', error);
+      alert('Failed to create event. Please try again later.');
     }
   };
 

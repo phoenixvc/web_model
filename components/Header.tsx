@@ -5,6 +5,17 @@ import { useSession, signIn, signOut } from 'next-auth/client';
 const Header = () => {
   const [session, loading] = useSession();
 
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    const query = e.target.search.value;
+    try {
+      // Implement search functionality here
+    } catch (error) {
+      console.error('Failed to search:', error);
+      alert('Failed to search. Please try again later.');
+    }
+  };
+
   return (
     <header className="header">
       <div className="logo">
@@ -60,8 +71,10 @@ const Header = () => {
         </ul>
       </nav>
       <div className="search-bar">
-        <input type="text" placeholder="Search..." />
-        <button>Search</button>
+        <form onSubmit={handleSearch}>
+          <input type="text" name="search" placeholder="Search..." />
+          <button type="submit">Search</button>
+        </form>
       </div>
     </header>
   );

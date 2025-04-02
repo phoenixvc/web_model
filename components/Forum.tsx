@@ -10,9 +10,14 @@ const Forum = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch('/api/community');
-      const data = await response.json();
-      setPosts(data);
+      try {
+        const response = await fetch('/api/community');
+        const data = await response.json();
+        setPosts(data);
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+        alert('Failed to fetch posts. Please try again later.');
+      }
     };
 
     fetchPosts();
@@ -25,20 +30,25 @@ const Forum = () => {
       return;
     }
 
-    const response = await fetch('/api/community', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content: newPost, author: session.user.email }),
-    });
+    try {
+      const response = await fetch('/api/community', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: newPost, author: session.user.email }),
+      });
 
-    if (response.ok) {
-      const newPostData = await response.json();
-      setPosts([...posts, newPostData]);
-      setNewPost('');
-    } else {
-      alert('Failed to post message.');
+      if (response.ok) {
+        const newPostData = await response.json();
+        setPosts([...posts, newPostData]);
+        setNewPost('');
+      } else {
+        alert('Failed to post message.');
+      }
+    } catch (error) {
+      console.error('Failed to post message:', error);
+      alert('Failed to post message. Please try again later.');
     }
   };
 
@@ -49,19 +59,24 @@ const Forum = () => {
       return;
     }
 
-    const response = await fetch(`/api/community/${postId}/replies`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content: replyContent, author: session.user.email }),
-    });
+    try {
+      const response = await fetch(`/api/community/${postId}/replies`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: replyContent, author: session.user.email }),
+      });
 
-    if (response.ok) {
-      const updatedPost = await response.json();
-      setPosts(posts.map(post => post._id === postId ? updatedPost : post));
-    } else {
-      alert('Failed to reply to message.');
+      if (response.ok) {
+        const updatedPost = await response.json();
+        setPosts(posts.map(post => post._id === postId ? updatedPost : post));
+      } else {
+        alert('Failed to reply to message.');
+      }
+    } catch (error) {
+      console.error('Failed to reply to message:', error);
+      alert('Failed to reply to message. Please try again later.');
     }
   };
 
