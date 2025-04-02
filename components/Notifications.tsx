@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getSession } from 'next-auth/client';
 import axios from 'axios';
 import Header from './Header';
+import { API_ENDPOINTS } from '../utils/apiEndpoints';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -16,14 +17,14 @@ const Notifications = () => {
       const session = await getSession();
       setSession(session);
       if (session) {
-        const response = await axios.get('/api/notifications', {
+        const response = await axios.get(`${API_ENDPOINTS.ASPIRE}/notifications`, {
           headers: {
             Authorization: `Bearer ${session.accessToken}`
           }
         });
         setNotifications(response.data);
 
-        const preferencesResponse = await axios.get('/api/notification-preferences', {
+        const preferencesResponse = await axios.get(`${API_ENDPOINTS.ASPIRE}/notification-preferences`, {
           headers: {
             Authorization: `Bearer ${session.accessToken}`
           }
@@ -36,7 +37,7 @@ const Notifications = () => {
   }, []);
 
   const markAsRead = async (id) => {
-    const response = await axios.put('/api/notifications', { id, read: true }, {
+    const response = await axios.put(`${API_ENDPOINTS.ASPIRE}/notifications`, { id, read: true }, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`
       }
@@ -49,7 +50,7 @@ const Notifications = () => {
   };
 
   const deleteNotification = async (id) => {
-    const response = await axios.delete('/api/notifications', {
+    const response = await axios.delete(`${API_ENDPOINTS.ASPIRE}/notifications`, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`
       },
@@ -65,7 +66,7 @@ const Notifications = () => {
     const updatedPreferences = { ...notificationPreferences, [name]: checked };
     setNotificationPreferences(updatedPreferences);
 
-    const response = await axios.put('/api/notification-preferences', updatedPreferences, {
+    const response = await axios.put(`${API_ENDPOINTS.ASPIRE}/notification-preferences`, updatedPreferences, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`
       }

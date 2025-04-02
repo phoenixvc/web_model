@@ -3,6 +3,7 @@ import Header from './Header';
 import Footer from './Footer';
 import { getSession } from 'next-auth/client';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../utils/apiEndpoints';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -37,7 +38,7 @@ const UserProfile = () => {
           achievements: userProfile.data.achievements
         });
 
-        const userActivities = await axios.get('/api/activities', {
+        const userActivities = await axios.get(`${API_ENDPOINTS.ASPIRE}/user-activity`, {
           headers: {
             Authorization: `Bearer ${session.accessToken}`
           }

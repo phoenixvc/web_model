@@ -3,6 +3,7 @@ import Header from './Header';
 import Footer from './Footer';
 import { getSession } from 'next-auth/client';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../utils/apiEndpoints';
 
 const UserDashboard = () => {
   const [user, setUser] = useState(null);
@@ -21,21 +22,21 @@ const UserDashboard = () => {
         });
         setUser(userProfile.data);
 
-        const userActivities = await axios.get('/api/activities', {
+        const userActivities = await axios.get(`${API_ENDPOINTS.ASPIRE}/user-activity`, {
           headers: {
             Authorization: `Bearer ${session.accessToken}`
           }
         });
         setActivities(userActivities.data);
 
-        const userAnalytics = await axios.get('/api/analytics', {
+        const userAnalytics = await axios.get(`${API_ENDPOINTS.ASPIRE}/analytics`, {
           headers: {
             Authorization: `Bearer ${session.accessToken}`
           }
         });
         setAnalytics(userAnalytics.data);
 
-        const userAchievements = await axios.get('/api/achievements', {
+        const userAchievements = await axios.get(`${API_ENDPOINTS.ASPIRE}/achievements`, {
           headers: {
             Authorization: `Bearer ${session.accessToken}`
           }
