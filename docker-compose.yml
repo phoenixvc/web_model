@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    networks:
+      - webnet
+
+  database:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    env_file:
+      - .env
+    networks:
+      - webnet
+
+  socket:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    networks:
+      - webnet
+
+  dotnet-aspire:
+    image: mcr.microsoft.com/dotnet/aspire:5.0
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    networks:
+      - webnet
+
+  dotnet-arc:
+    image: mcr.microsoft.com/dotnet/arc:5.0
+    ports:
+      - "5001:5001"
+    env_file:
+      - .env
+    networks:
+      - webnet
+
+networks:
+  webnet:
